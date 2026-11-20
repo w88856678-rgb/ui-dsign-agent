@@ -3,257 +3,228 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f5f2e9">
-  <meta name="description" content="UI DSign Agent 是一个开源 Codex 设计 Skill。点开两版社区便签墙，看一次首屏改版怎样从目标走到实测。">
-  <title>UI DSign Agent · 便签墙改版演示</title>
+  <meta name="theme-color" content="#f8f8f4">
+  <meta name="description" content="UI DSign Agent 是一个给 Codex 用的开源 UI 设计 Skill。试用双色叠印工作坊的预约界面，并把设计提示词带回你的项目。">
+  <meta property="og:title" content="UI DSign Agent">
+  <meta property="og:description" content="从设计提示词到可操作的界面。现场体验一张双色叠印工作坊预约页。">
+  <meta property="og:type" content="website">
+  <title>UI DSign Agent · 设计与交互实作</title>
   <style>
-    :root { color-scheme: light; --paper:#f5f2e9; --ink:#202d25; --muted:#566256; --edge:#d9d6c8; --forest:#244d3d; --rust:#963e24; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; color:var(--ink); background:var(--paper) }
+    :root {
+      color-scheme: light;
+      --paper:#f8f8f4; --ink:#16171b; --soft:#53565a; --line:#c9c9c0;
+      --blue:#2438c7; --poster:#ff714c; --cyan:#132daf; --stock:#fff7e9;
+      --sans:"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei",sans-serif;
+      font-family:var(--sans); color:var(--ink); background:var(--paper);
+    }
     *,*::before,*::after { box-sizing:border-box }
     body { margin:0 }
-    button,input,textarea { font:inherit; color:inherit }
-    button,a { -webkit-tap-highlight-color:transparent }
-    button { cursor:pointer }
-    a { color:inherit; text-underline-offset:4px }
-    button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,.screen:focus-visible { outline:3px solid #a53e19; outline-offset:3px }
+    button,input { font:inherit; color:inherit }
+    button,a,summary { -webkit-tap-highlight-color:transparent }
+    button,summary { cursor:pointer }
+    a { color:inherit; text-decoration-thickness:1px; text-underline-offset:4px }
+    :focus-visible { outline:3px solid var(--blue); outline-offset:4px }
     [hidden] { display:none !important }
-    .page { max-width:1440px; margin:0 auto; padding:0 clamp(20px,4vw,70px) }
-    .top { height:74px; border-bottom:1px solid var(--edge); display:flex; align-items:center; justify-content:space-between; gap:16px }
-    .signature,.top a,.stage-head,.legend,.ctl,.actions,.wall-head,.stats,.mode-switch,.dialog-bar { display:flex; align-items:center }
-    .signature { gap:12px; font-size:15px; font-weight:700; letter-spacing:-.02em }
-    .mark { width:27px; height:27px; position:relative; border-radius:7px; background:var(--forest); display:inline-block }
-    .mark::before,.mark::after { content:""; position:absolute; width:12px; height:14px; border:1.5px solid #f4efdd; border-radius:2px }
-    .mark::before { left:5px; top:5px; transform:rotate(-9deg) }
-    .mark::after { left:10px; top:9px; background:#e7d284; transform:rotate(8deg); border-color:#e7d284 }
+    .page { width:min(1336px,100%); margin:auto; padding:0 clamp(20px,4.8vw,76px) 30px }
+    .top,.top a,.brand,.actions,.work-caption,.brief summary,.booking-foot { display:flex; align-items:center }
+    .top { min-height:63px; justify-content:space-between; gap:16px; border-bottom:1px solid var(--ink) }
+    .brand { gap:10px; font-size:14px; font-weight:700 }
+    .mark { display:inline-flex; gap:2px; width:24px; height:23px; align-items:end; transform:skewX(-14deg); overflow:hidden }
+    .mark i { display:block; width:6px; height:16px; background:var(--blue) }
+    .mark i:nth-child(2) { height:23px }
+    .mark i:last-child { height:11px }
     .top a { min-height:44px; gap:8px; text-decoration:none; font-size:14px; font-weight:650 }
-    .layout { display:grid; grid-template-columns:minmax(235px,.76fr) minmax(510px,1.65fr); gap:clamp(30px,5vw,82px); align-items:center; padding:clamp(34px,5vw,82px) 0 }
-    .eyebrow { margin:0 0 14px; color:var(--rust); font-weight:700; font-size:14px }
-    h1 { font-family:Georgia,"Times New Roman",serif; font-weight:500; font-size:clamp(66px,6.3vw,99px); line-height:.91; letter-spacing:-.075em; margin:0 0 26px }
-    h1 span { display:block }
-    .lead { color:#39473b; font-size:clamp(16px,1.4vw,20px); line-height:1.7; max-width:23em; margin:0 }
-    .ctl { gap:17px; flex-wrap:wrap; margin-top:22px }
-    .download { display:inline-flex; align-items:center; min-height:45px; gap:14px; padding:0 17px; color:#fff; background:var(--forest); border-radius:8px; text-decoration:none; font-weight:650 }
-    .install { font-size:14px; font-weight:600 }
-    .measure { margin:36px 0 0; border-top:1px solid var(--edge); padding-top:18px }
-    .measure strong { display:block; font-family:Georgia,"Times New Roman",serif; font-size:clamp(40px,3.6vw,58px); letter-spacing:-.06em; font-weight:500; line-height:1.1 }
-    .measure strong span { color:var(--rust); font-family:system-ui,sans-serif; font-size:.62em; vertical-align:.12em; margin:0 .13em }
-    .measure small { display:block; font-size:13px; margin:6px 0 0; color:var(--muted); line-height:1.55 }
-    .stage { border:1px solid #d7d3c4; border-radius:22px; background:#ece8db; padding:clamp(14px,1.8vw,28px); min-width:0; box-shadow:0 15px 34px -32px #534a35 }
-    .stage-head { justify-content:space-between; gap:12px; margin-bottom:18px }
-    .stage-head h2 { margin:0; font-size:clamp(17px,1.5vw,22px); letter-spacing:-.04em }
-    .stage-head>span { color:#566052; font-size:12px }
-    .pair { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(10px,1.3vw,22px) }
-    .variant { min-width:0 }
-    .legend { margin:0 0 9px; font-size:13px; gap:7px; font-weight:700 }
-    .legend::before { content:""; width:8px; height:8px; border-radius:50%; background:#8b8d7f }
-    .improved .legend::before { background:#387252 }
-    .screen { height:424px; overflow-y:auto; overflow-x:hidden; border-radius:15px; border:1px solid #b8b8a5; background:#f9f7ee; scrollbar-width:thin; scrollbar-color:#b9b5a6 transparent; position:relative; overscroll-behavior:contain }
-    .improved .screen { border-color:#91a692 }
-    .mast { padding:12px; height:68px; display:flex; align-items:center; justify-content:space-between; gap:4px }
-    .mast h4 { color:#263428; margin:0; font-size:22px; letter-spacing:-.055em }
-    .mast small { color:#626a59; font-size:11px }
-    .rule-inline,.match,.dismiss { border:1px solid #ccd0be; background:#edf0df; border-radius:7px; padding:5px 7px; font-size:12px; font-weight:650 }
-    .rule-inline { min-height:36px }
-    .original .rule-inline,.improved .big-rule { display:none }
-    .actions { height:52px; padding:0 12px; gap:7px }
-    .actions button { flex:1; height:47px; text-align:left; min-width:0; border-radius:8px; padding:0 9px; border:1px solid #d6c077; background:#f5d778; font-weight:750; font-size:14px }
-    .actions button:last-child { background:#d5e5c9; border-color:#b8cda8 }
-    .stats { gap:5px; color:#244936; font-size:12px; font-weight:650 }
-    .original .notices { margin:12px 12px 0; height:100px; display:grid; grid-template-rows:55px 37px; gap:8px }
-    .original .stats { border-radius:7px; padding:0 10px; background:#2e533e; color:white }
-    .big-rule { text-align:left; padding:0 10px; font-size:12px; border:1px solid #d9ceba; border-radius:7px; background:#f5ebd7 }
-    .improved .notices { margin:6px 12px 0; height:26px }
-    .improved .stats { height:26px }
-    .board { margin-top:12px; padding:0 8px 12px; background-color:#e5cfaa; background-image:radial-gradient(#be9e70 0.65px,transparent 0.85px); background-size:7px 7px; position:relative; min-height:200px }
-    .wall-head { height:40px; justify-content:space-between; gap:4px }
-    .wall-head h5 { font-size:15px; margin:0; font-weight:750 }
-    .wall-head .total { font-size:11px; font-weight:500; color:#564b39 }
-    .match { min-height:32px; background:#244936; color:white; border:0 }
-    .old-match { position:absolute; right:12px; top:128px; z-index:1; padding:7px 9px; border-radius:7px; border:1px solid #c6c8aa; background:#ffffee; color:#32543f; box-shadow:0 2px 7px #50492530; font-size:12px; font-weight:700; pointer-events:none }
-    .original .match,.improved .old-match { display:none }
-    .notes { margin:0; padding:0; list-style:none; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px }
-    .note { display:flex; flex-direction:column; align-items:flex-start; width:100%; height:114px; padding:9px; text-align:left; color:#2d321e; background:#f9df82; border:0; border-radius:3px 3px 8px 3px; box-shadow:0 2px 3px #624e2923 }
-    .note.offer { background:#d8e7c8 }
-    .note .kind { font-size:10px; padding:2px 5px; border-radius:4px; background:#ffffff72; font-weight:650 }
-    .note strong { font-size:clamp(13px,1.13vw,17px); line-height:1.37; margin-top:7px; letter-spacing:-.035em; font-weight:700; overflow-wrap:anywhere; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden }
-    .note .when { margin-top:auto; color:#4d5442; font-size:10px }
-    .demo-tip { font-size:12px; color:#505c50; margin:13px 1px 0; line-height:1.6 }
-    .mode-switch { display:none }
-    dialog { width:min(390px,calc(100% - 32px)); padding:24px; border:1px solid #c0c6b7; border-radius:16px; color:var(--ink); background:#fffdf5; box-shadow:0 18px 60px #12271c33 }
-    dialog::backdrop { background:#18261ee0; opacity:.55 }
-    .dialog-bar { justify-content:space-between; gap:12px }
-    dialog h2 { margin:0; font-size:21px }
-    dialog p { font-size:15px; line-height:1.7; margin:15px 0 4px }
-    .dismiss { min-height:40px; padding:0 11px; flex-shrink:0 }
-    form { margin-top:16px }
-    form label { display:block; font-size:13px; margin-bottom:6px }
-    textarea { resize:vertical; width:100%; min-height:82px; padding:9px; background:white; border:1px solid #929d8b; border-radius:7px }
-    form .submit { display:block; margin-top:12px; border:0; border-radius:7px; padding:10px 16px; background:var(--forest); color:white; font-weight:650 }
-    @media (min-width:1500px) { .layout { padding:78px 0 } }
-    @media (max-width:970px) {
-      .layout { grid-template-columns:1fr; gap:24px; padding:32px 0 }
-      .intro { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px 24px }
-      .eyebrow,.intro h1,.lead,.ctl { grid-column:1 }
-      h1 { font-size:56px; margin:0 0 5px }
-      h1 span { display:inline }
-      .eyebrow { margin:0 0 4px }
-      .lead { max-width:38em; font-size:16px }
-      .ctl { margin-top:5px }
-      .measure { grid-column:2; grid-row:2 / 5; align-self:center; margin:0; padding:0 0 0 18px; border-top:0; border-left:1px solid var(--edge); max-width:150px }
-      .stage { max-width:850px; width:100%; margin:auto }
+    .launch { display:grid; grid-template-columns:minmax(0,1.6fr) minmax(250px,.8fr); align-items:center; gap:clamp(24px,4.2vw,64px); margin:clamp(25px,3.5vw,50px) 0 }
+    h1,p,h2 { margin:0 }
+    h1 { font-size:clamp(60px,7.85vw,111px); font-weight:700; letter-spacing:-.065em; line-height:.98; white-space:nowrap }
+    h1 span { color:var(--blue) }
+    .lead { font-size:clamp(15px,1.22vw,18px); line-height:1.6; max-width:26em }
+    .actions { gap:18px; flex-wrap:wrap; margin-top:13px; font-size:14px; font-weight:650 }
+    .download { display:inline-flex; align-items:center; gap:14px; min-height:42px; padding:0 15px; background:var(--ink); color:white; text-decoration:none }
+    .download:hover { background:var(--blue) }
+    .actions a:last-child { display:inline-flex; align-items:center; min-height:42px }
+    .work-caption { justify-content:space-between; gap:12px; border-top:1px solid var(--line); padding:13px 0; font-size:13px }
+    .work-caption h2 { font-size:14px; font-weight:700 }
+    .work-caption span { color:var(--soft) }
+    .work { display:grid; grid-template-columns:minmax(0,1.57fr) minmax(270px,.85fr); background:#18265c }
+    .poster { position:relative; isolation:isolate; overflow:hidden; min-height:350px; margin:0; background:var(--poster); color:#171622 }
+    .poster::after { content:""; position:absolute; z-index:3; inset:0; pointer-events:none; opacity:.12; background-image:radial-gradient(#30161c .65px,transparent .85px); background-size:3px 3px }
+    .poster-inner { position:absolute; z-index:2; inset:clamp(20px,2.5vw,38px); display:flex; align-items:start; flex-direction:column; justify-content:space-between }
+    .process,.poster-footer { font:650 12px/1.25 "Courier New",monospace; letter-spacing:.07em; text-transform:uppercase }
+    .poster-type { display:flex; flex-direction:column; align-items:start; font-family:"Helvetica Neue",Arial,sans-serif; font-weight:900; font-size:clamp(66px,7.9vw,120px); line-height:.74; letter-spacing:-.065em; position:relative; left:-.045em }
+    .poster-type span:last-child { margin-top:.10em }
+    .poster-footer { font-size:11px }
+    .ink-field { position:absolute; inset:0; overflow:hidden; pointer-events:none }
+    .ribbon { position:absolute; left:71%; top:49%; width:54%; height:92%; transform:translate(-50%,-50%) rotate(17deg) }
+    .trace { position:absolute; left:6%; top:17%; width:80%; height:64%; border:clamp(2px,.22vw,4px) solid var(--cyan); border-radius:51% 49% 50% 50% / 42% 52% 48% 58%; transform:translate(var(--x),var(--y)) rotate(var(--turn)); }
+    .register { position:absolute; height:13px; width:13px; right:12px; top:12px; color:var(--ink) }
+    .register::before,.register::after { content:""; position:absolute; background:currentColor }
+    .register::before { width:100%; height:1px; top:6px }
+    .register::after { width:1px; height:100%; left:6px }
+    .register.bottom { top:auto; bottom:12px }
+    .booking { padding:clamp(23px,2.4vw,39px); background:#18265c; color:#fff9eb; display:flex; flex-direction:column; justify-content:center; min-width:0 }
+    .booking h3 { font-size:clamp(22px,2.05vw,34px); letter-spacing:-.045em; line-height:1.22; margin:0 }
+    .booking-meta { margin-top:7px; color:#d0d8ef; font-size:13px; line-height:1.55 }
+    .booking fieldset { margin:19px 0 13px; border:0; padding:0; min-width:0 }
+    .booking legend { font-size:13px; margin-bottom:6px; font-weight:650; padding:0 }
+    .slot { position:relative; display:flex; align-items:center; justify-content:space-between; gap:9px; min-height:45px; padding:5px 3px; border-top:1px solid #647097; cursor:pointer; font-size:14px }
+    .slot:last-of-type { border-bottom:1px solid #647097 }
+    .slot input { position:absolute; width:1px; height:1px; opacity:0 }
+    .day { display:inline-flex; align-items:center; gap:9px; font-weight:650 }
+    .day::before { content:""; display:inline-block; width:15px; height:15px; border:1.5px solid #bec8e4; border-radius:50% }
+    .slot input:checked + .day::before { border:4px solid #ff9a76; background:#18265c }
+    .slot input:focus-visible + .day { outline:2px solid #ffb493; outline-offset:3px }
+    .time { font-variant-numeric:tabular-nums }
+    .confirm,.reset { width:100%; min-height:44px; padding:9px 13px; border:0; display:flex; align-items:center; justify-content:space-between; font-weight:700; text-align:left }
+    .confirm { background:#ff9977; color:#241b25 }
+    .confirm:hover { background:#ffb79d }
+    .booking :focus-visible { outline-color:#ffe395 }
+    .booking-foot { font-size:12px; color:#d0d8ef; line-height:1.5; margin-top:9px }
+    .result { display:flex; flex-direction:column; justify-content:center; min-height:202px; gap:12px }
+    .result h4 { font-size:15px; color:#ffb493; margin:0 }
+    .chosen { font-weight:650; font-size:clamp(21px,2vw,30px); line-height:1.35; letter-spacing:-.035em }
+    .reset { background:transparent; color:white; border:1px solid #8e9ac2; margin-top:4px }
+    .brief { border-bottom:1px solid var(--line); margin-top:5px }
+    .brief summary { min-height:56px; justify-content:space-between; font-weight:650; font-size:15px; list-style:none }
+    .brief summary::-webkit-details-marker { display:none }
+    .brief summary::after { content:"+"; font:25px/1 Arial,sans-serif; color:var(--blue) }
+    .brief[open] summary::after { content:"−" }
+    .brief-body { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:0 0 18px }
+    .brief code { font:15px/1.7 var(--sans); overflow-wrap:anywhere; max-width:62em }
+    .copy { flex:none; border:1px solid var(--ink); background:transparent; min-height:42px; padding:0 14px }
+    .copy:hover { background:var(--ink); color:white }
+    .copy-feedback { color:var(--soft); margin:0 0 12px; font-size:13px }
+    @media (min-width:1450px) { .poster { min-height:410px } }
+    @media (max-width:900px) {
+      .launch { grid-template-columns:minmax(0,1.35fr) minmax(220px,.85fr); gap:20px }
+      h1 { font-size:7.7vw }
+      .work { grid-template-columns:minmax(0,1.25fr) minmax(242px,.9fr) }
+      .poster-type { font-size:clamp(62px,8vw,90px) }
     }
-    @media (max-width:640px) {
-      .page { padding:0 16px }
-      .top { height:55px }
-      .layout { padding:23px 0 }
-      .intro { display:block }
-      .eyebrow { font-size:12px; margin-bottom:8px }
-      h1 { font-size:clamp(44px,10vw,61px); margin:0 0 12px }
-      .lead { font-size:15px; line-height:1.55 }
-      .ctl { margin-top:14px }
-      .measure { display:flex; align-items:center; gap:12px; max-width:none; margin-top:18px; padding:12px 0 0; border-left:0; border-top:1px solid var(--edge) }
-      .measure strong { font-size:33px }
-      .measure small { margin:0; font-size:12px }
-      .stage { border-radius:15px }
-      .stage-head { margin-bottom:12px }
-      .pair { display:block }
-      .variant:not(.current),.legend { display:none }
-      .mode-switch { display:flex; padding:3px; margin-bottom:10px; background:#dcd9cb; border-radius:8px; gap:3px }
-      .mode-switch button { flex:1; min-height:38px; font-weight:650; font-size:13px; border-radius:6px; border:0; background:transparent }
-      .mode-switch button[aria-pressed=true] { color:#244936; background:#fffdf4 }
-      .note strong { font-size:16px }
+    @media (max-width:700px) {
+      .page { padding:0 18px 18px }
+      .top { min-height:49px }
+      .launch { display:block; margin:24px 0 15px }
+      h1 { font-size:clamp(43px,10vw,69px) }
+      .lead { margin-top:12px; max-width:38em; font-size:15px }
+      .actions { margin-top:7px }
+      .work-caption { padding:10px 0 }
+      .work { grid-template-columns:1fr }
+      .poster { min-height:0; aspect-ratio:1.95 }
+      .poster-inner { inset:16px 18px }
+      .process,.poster-footer { font-size:9px }
+      .poster-type { font-size:clamp(48px,12vw,78px) }
+      .booking { padding:20px }
+      .booking fieldset { margin:13px 0 10px }
+      .brief-body { align-items:flex-start; flex-direction:column; gap:12px }
+    }
+    @media (prefers-reduced-motion:no-preference) {
+      .download,.confirm,.copy { transition:background-color .16s,color .16s }
     }
   </style>
 </head>
 <body>
   <div class="page">
     <header class="top">
-      <div class="signature"><span class="mark" aria-hidden="true"></span>UI DSign Agent</div>
-      <a href="https://github.com/w88856678-rgb/ui-dsign-agent">GitHub 仓库 <span aria-hidden="true">↗</span></a>
+      <div class="brand"><span class="mark" aria-hidden="true"><i></i><i></i><i></i></span>开源 Codex 设计 Skill</div>
+      <a href="https://github.com/w88856678-rgb/ui-dsign-agent">GitHub <span aria-hidden="true">↗</span></a>
     </header>
-    <main class="layout">
-      <div class="intro">
-        <p class="eyebrow">开源 Codex 设计 Skill</p>
+    <main>
+      <header class="launch">
         <h1>UI DSign <span>Agent</span></h1>
-        <p class="lead">把参考图、线框或现有页面交给 Codex，做出可以点按、可以对照的网页和移动界面。</p>
-        <div class="ctl">
-          <a class="download" href="https://github.com/w88856678-rgb/ui-dsign-agent/releases/latest/download/ui-dsign-agent.zip">下载安装包 <span aria-hidden="true">↓</span></a>
-          <a class="install" href="https://github.com/w88856678-rgb/ui-dsign-agent#安装">安装说明</a>
+        <div>
+          <p class="lead">把参考图、线框或已有页面交给 Codex，做出可以实际操作的网页和移动界面。</p>
+          <div class="actions">
+            <a class="download" href="https://github.com/w88856678-rgb/ui-dsign-agent/releases/latest/download/ui-dsign-agent.zip">下载安装包 <span aria-hidden="true">↓</span></a>
+            <a href="https://github.com/w88856678-rgb/ui-dsign-agent#安装">安装说明</a>
+          </div>
         </div>
-        <p class="measure"><strong>2 <span>→</span> 4</strong><small>同尺寸预览中，首屏能读全的便签标题数</small></p>
-      </div>
-      <section class="stage" aria-labelledby="case-title">
-        <header class="stage-head"><h2 id="case-title">社区便签墙</h2><span>首屏布局对照</span></header>
-        <div class="mode-switch" role="group" aria-label="切换便签墙版本">
-          <button type="button" data-show="original" aria-pressed="false">改版前</button>
-          <button type="button" data-show="improved" aria-pressed="true">改版后</button>
+      </header>
+      <section aria-labelledby="example-title">
+        <div class="work-caption"><h2 id="example-title">预约页实作</h2><span>可交互演示</span></div>
+        <div class="work">
+          <figure class="poster" role="img" aria-label="双色叠印工作坊海报。橙红色纸面上，深蓝色线条错位叠出旋转的印痕，左侧大字为 OVERPRINT。">
+            <div class="ink-field" aria-hidden="true"><div class="ribbon"></div><i class="register"></i><i class="register bottom"></i></div>
+            <div class="poster-inner" aria-hidden="true">
+              <span class="process" lang="en">Two-colour screen printing</span>
+              <div class="poster-type" lang="en"><span>OVER</span><span>PRINT</span></div>
+              <span class="poster-footer">双色叠印 / 工作坊</span>
+            </div>
+          </figure>
+          <div class="booking">
+            <h3>双色叠印工作坊</h3>
+            <p class="booking-meta">用两层色墨，手印一张自己的海报。</p>
+            <form id="booking-form">
+              <fieldset>
+                <legend>选择场次</legend>
+                <label class="slot"><input type="radio" name="session" value="周六 10:00–12:00" checked><span class="day">周六</span><span class="time">10:00–12:00</span></label>
+                <label class="slot"><input type="radio" name="session" value="周日 14:00–16:00"><span class="day">周日</span><span class="time">14:00–16:00</span></label>
+              </fieldset>
+              <button class="confirm" type="submit">确认场次 <span aria-hidden="true">↗</span></button>
+            </form>
+            <div id="result" class="result" hidden>
+              <h4 id="result-heading" tabindex="-1">已选定场次</h4>
+              <p class="chosen" id="chosen"></p>
+              <button class="reset" type="button">重新选择 <span aria-hidden="true">↶</span></button>
+            </div>
+            <p class="booking-foot">演示预约，仅在当前页面生效。</p>
+          </div>
         </div>
-        <div class="pair">
-          <article class="variant original" aria-label="改版前"><h3 class="legend">改版前</h3></article>
-          <article class="variant improved current" aria-label="改版后"><h3 class="legend">改版后</h3></article>
-        </div>
-        <p class="demo-tip">点一张便签看详情，或用「贴需求」试一条自己的文案。演示数据仅在当前页面生效。</p>
-        <noscript>请启用 JavaScript 来操作这份演示。你也可以在 GitHub 仓库首页查看对照图。</noscript>
+        <details class="brief">
+          <summary>查看这个页面的设计提示词</summary>
+          <div class="brief-body">
+            <code id="prompt">$ui-dsign-agent 做一个双色印刷工作坊的预约页。用橙红与深蓝叠印海报，让访客第一眼看到可预约的场次，能用键盘选时间，确认后能看到自己选了哪一场。</code>
+            <button class="copy" type="button">复制提示词</button>
+          </div>
+          <p class="copy-feedback" role="status" hidden></p>
+        </details>
       </section>
     </main>
   </div>
-  <template id="wall">
-    <div class="screen" tabindex="0" role="region" aria-label="可滚动的便签墙">
-      <header class="mast"><div><h4>邻里便签</h4><small>小店资源互助板</small></div><button type="button" class="rule-inline" data-action="rules">互助守则</button></header>
-      <div class="actions"><button type="button" data-action="need">＋ 贴需求</button><button type="button" data-action="offer">＋ 贴资源</button></div>
-      <div class="notices"><div class="stats">本周已有 3 次互助</div><button type="button" class="big-rule" data-action="rules">邻里互助守则　›</button></div>
-      <div class="board">
-        <div class="wall-head"><h5>附近便签 <span class="total"></span></h5><button type="button" class="match" data-action="match">找匹配 ›</button></div>
-        <span class="old-match" aria-hidden="true">找匹配</span>
-        <ul class="notes"></ul>
-      </div>
-    </div>
-  </template>
-  <template id="note"><li><button class="note" type="button"><span class="kind"></span><strong></strong><span class="when"></span></button></li></template>
-  <dialog aria-labelledby="dialog-title">
-    <div class="dialog-bar"><h2 id="dialog-title"></h2><button type="button" class="dismiss" autofocus>关闭</button></div>
-    <p class="dialog-text"></p>
-    <form hidden>
-      <label for="note-text">便签内容</label>
-      <textarea id="note-text" maxlength="44" required></textarea>
-      <button type="submit" class="submit">贴到便签墙</button>
-    </form>
-  </dialog>
   <script>
-    const notes = [
-      { kind:'need', title:'周五想借一台投影仪', when:'周五傍晚', detail:'社区放映会要用两小时，结束后当晚归还。' },
-      { kind:'offer', title:'折叠长桌可以外借', when:'周末可取', detail:'两张可折叠长桌，适合周末市集或小型活动。' },
-      { kind:'offer', title:'闲置投影仪可借出', when:'周五下午', detail:'投影仪和连接线齐全，周五下午可以自取。' },
-      { kind:'need', title:'市集缺一块黑板', when:'这周六', detail:'想在摊位上手写菜单，小黑板或磁吸板都可以。' },
-      { kind:'need', title:'想借几把折叠椅', when:'下周一', detail:'读书会还缺四个座位，用完即可送回。' },
-      { kind:'offer', title:'有一箱空玻璃瓶', when:'随时可取', detail:'清洗过的小玻璃瓶，可以用于插花或手作。' }
-    ];
-    const variants = [...document.querySelectorAll('.variant')];
-    const dialog = document.querySelector('dialog');
-    const form = dialog.querySelector('form');
-    const input = form.querySelector('textarea');
-    let postKind = 'need';
-
-    function openDialog(title, text, posting) {
-      dialog.querySelector('h2').textContent = title;
-      dialog.querySelector('.dialog-text').textContent = text;
-      form.hidden = !posting;
-      input.value = '';
-      input.setCustomValidity('');
-      dialog.showModal();
-      if (posting) input.focus();
+    const ribbon = document.querySelector('.ribbon');
+    for (let i = 0; i < 34; i++) {
+      const trace = document.createElement('i');
+      trace.className = 'trace';
+      trace.style.setProperty('--x', (i - 16.5) * 1.45 + '%');
+      trace.style.setProperty('--y', (16.5 - i) * 1.12 + '%');
+      trace.style.setProperty('--turn', (-42 + i * 3.3) + 'deg');
+      ribbon.append(trace);
     }
 
-    function renderNotes() {
-      for (const variant of variants) {
-        const list = variant.querySelector('.notes');
-        list.replaceChildren();
-        variant.querySelector('.total').textContent = notes.length + ' 张';
-        for (const note of notes) {
-          const row = document.querySelector('#note').content.cloneNode(true);
-          const button = row.querySelector('button');
-          button.classList.add(note.kind);
-          row.querySelector('.kind').textContent = note.kind === 'need' ? '我需要' : '我能提供';
-          row.querySelector('strong').textContent = note.title;
-          row.querySelector('.when').textContent = note.when;
-          button.addEventListener('click', () => openDialog(note.title, note.when + ' · ' + note.detail, false));
-          list.append(row);
-        }
-      }
-    }
-
-    for (const variant of variants) {
-      variant.append(document.querySelector('#wall').content.cloneNode(true));
-      variant.addEventListener('click', (event) => {
-        const action = event.target.closest('[data-action]')?.dataset.action;
-        if (action === 'rules') openDialog('互助守则', '借用前确认物品状态、时间和归还方式。', false);
-        if (action === 'match') openDialog('一组匹配示例', '「周五想借一台投影仪」遇到了「闲置投影仪可借出」。两条便签都有投影仪，取还时间也有交集。', false);
-        if (action === 'need' || action === 'offer') {
-          postKind = action;
-          openDialog(action === 'need' ? '贴一张需求便签' : '贴一张资源便签', '写清楚你需要或能提供什么，两版会同步显示。', true);
-        }
-      });
-    }
-    renderNotes();
-    dialog.querySelector('.dismiss').addEventListener('click', () => dialog.close());
-    input.addEventListener('input', () => input.setCustomValidity(''));
+    const form = document.querySelector('#booking-form');
+    const result = document.querySelector('#result');
     form.addEventListener('submit', (event) => {
       event.preventDefault();
-      const title = input.value.trim();
-      if (!title) {
-        input.setCustomValidity('请写点便签内容。');
-        input.reportValidity();
-        return;
-      }
-      notes.unshift({kind:postKind, title, when:'刚刚', detail:'这是你在当前演示中添加的便签。'});
-      renderNotes();
-      dialog.close();
+      document.querySelector('#chosen').textContent = form.elements.session.value;
+      form.hidden = true;
+      result.hidden = false;
+      document.querySelector('#result-heading').focus();
     });
-    for (const switcher of document.querySelectorAll('[data-show]')) {
-      switcher.addEventListener('click', () => {
-        for (const option of document.querySelectorAll('[data-show]')) option.setAttribute('aria-pressed', String(option === switcher));
-        for (const variant of variants) variant.classList.toggle('current', variant.classList.contains(switcher.dataset.show));
-      });
-    }
+    result.querySelector('button').addEventListener('click', () => {
+      result.hidden = true;
+      form.hidden = false;
+      form.querySelector('input:checked').focus();
+    });
+
+    const promptText = document.querySelector('#prompt');
+    const feedback = document.querySelector('.copy-feedback');
+    document.querySelector('.copy').addEventListener('click', async () => {
+      let copied = false;
+      try {
+        await navigator.clipboard.writeText(promptText.textContent);
+        copied = true;
+      } catch {
+        const range = document.createRange();
+        range.selectNodeContents(promptText);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        try { copied = document.execCommand('copy'); } catch { /* Keep the prompt selected for manual copy. */ }
+      }
+      feedback.hidden = false;
+      feedback.textContent = copied ? '已复制，可以粘贴到 Codex。' : '已选中提示词，可以手动复制。';
+    });
   </script>
 </body>
 </html>
