@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f2e9">
+  <meta name="description" content="UI DSign Agent 是一个开源 Codex 设计 Skill。点开两版社区便签墙，看一次首屏改版怎样从目标走到实测。">
+  <title>UI DSign Agent · 便签墙改版演示</title>
+  <style>
+    :root { color-scheme: light; --paper:#f5f2e9; --ink:#202d25; --muted:#566256; --edge:#d9d6c8; --forest:#244d3d; --rust:#963e24; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; color:var(--ink); background:var(--paper) }
+    *,*::before,*::after { box-sizing:border-box }
+    body { margin:0 }
+    button,input,textarea { font:inherit; color:inherit }
+    button,a { -webkit-tap-highlight-color:transparent }
+    button { cursor:pointer }
+    a { color:inherit; text-underline-offset:4px }
+    button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,.screen:focus-visible { outline:3px solid #a53e19; outline-offset:3px }
+    [hidden] { display:none !important }
+    .page { max-width:1440px; margin:0 auto; padding:0 clamp(20px,4vw,70px) }
+    .top { height:74px; border-bottom:1px solid var(--edge); display:flex; align-items:center; justify-content:space-between; gap:16px }
+    .signature,.top a,.stage-head,.legend,.ctl,.actions,.wall-head,.stats,.mode-switch,.dialog-bar { display:flex; align-items:center }
+    .signature { gap:12px; font-size:15px; font-weight:700; letter-spacing:-.02em }
+    .mark { width:27px; height:27px; position:relative; border-radius:7px; background:var(--forest); display:inline-block }
+    .mark::before,.mark::after { content:""; position:absolute; width:12px; height:14px; border:1.5px solid #f4efdd; border-radius:2px }
+    .mark::before { left:5px; top:5px; transform:rotate(-9deg) }
+    .mark::after { left:10px; top:9px; background:#e7d284; transform:rotate(8deg); border-color:#e7d284 }
+    .top a { min-height:44px; gap:8px; text-decoration:none; font-size:14px; font-weight:650 }
+    .layout { display:grid; grid-template-columns:minmax(235px,.76fr) minmax(510px,1.65fr); gap:clamp(30px,5vw,82px); align-items:center; padding:clamp(34px,5vw,82px) 0 }
+    .eyebrow { margin:0 0 14px; color:var(--rust); font-weight:700; font-size:14px }
+    h1 { font-family:Georgia,"Times New Roman",serif; font-weight:500; font-size:clamp(66px,6.3vw,99px); line-height:.91; letter-spacing:-.075em; margin:0 0 26px }
+    h1 span { display:block }
+    .lead { color:#39473b; font-size:clamp(16px,1.4vw,20px); line-height:1.7; max-width:23em; margin:0 }
+    .ctl { gap:17px; flex-wrap:wrap; margin-top:22px }
+    .download { display:inline-flex; align-items:center; min-height:45px; gap:14px; padding:0 17px; color:#fff; background:var(--forest); border-radius:8px; text-decoration:none; font-weight:650 }
+    .install { font-size:14px; font-weight:600 }
+    .measure { margin:36px 0 0; border-top:1px solid var(--edge); padding-top:18px }
+    .measure strong { display:block; font-family:Georgia,"Times New Roman",serif; font-size:clamp(40px,3.6vw,58px); letter-spacing:-.06em; font-weight:500; line-height:1.1 }
+    .measure strong span { color:var(--rust); font-family:system-ui,sans-serif; font-size:.62em; vertical-align:.12em; margin:0 .13em }
+    .measure small { display:block; font-size:13px; margin:6px 0 0; color:var(--muted); line-height:1.55 }
+    .stage { border:1px solid #d7d3c4; border-radius:22px; background:#ece8db; padding:clamp(14px,1.8vw,28px); min-width:0; box-shadow:0 15px 34px -32px #534a35 }
+    .stage-head { justify-content:space-between; gap:12px; margin-bottom:18px }
+    .stage-head h2 { margin:0; font-size:clamp(17px,1.5vw,22px); letter-spacing:-.04em }
+    .stage-head>span { color:#566052; font-size:12px }
+    .pair { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(10px,1.3vw,22px) }
+    .variant { min-width:0 }
+    .legend { margin:0 0 9px; font-size:13px; gap:7px; font-weight:700 }
+    .legend::before { content:""; width:8px; height:8px; border-radius:50%; background:#8b8d7f }
+    .improved .legend::before { background:#387252 }
+    .screen { height:424px; overflow-y:auto; overflow-x:hidden; border-radius:15px; border:1px solid #b8b8a5; background:#f9f7ee; scrollbar-width:thin; scrollbar-color:#b9b5a6 transparent; position:relative; overscroll-behavior:contain }
+    .improved .screen { border-color:#91a692 }
+    .mast { padding:12px; height:68px; display:flex; align-items:center; justify-content:space-between; gap:4px }
+    .mast h4 { color:#263428; margin:0; font-size:22px; letter-spacing:-.055em }
+    .mast small { color:#626a59; font-size:11px }
+    .rule-inline,.match,.dismiss { border:1px solid #ccd0be; background:#edf0df; border-radius:7px; padding:5px 7px; font-size:12px; font-weight:650 }
+    .rule-inline { min-height:36px }
+    .original .rule-inline,.improved .big-rule { display:none }
+    .actions { height:52px; padding:0 12px; gap:7px }
+    .actions button { flex:1; height:47px; text-align:left; min-width:0; border-radius:8px; padding:0 9px; border:1px solid #d6c077; background:#f5d778; font-weight:750; font-size:14px }
+    .actions button:last-child { background:#d5e5c9; border-color:#b8cda8 }
+    .stats { gap:5px; color:#244936; font-size:12px; font-weight:650 }
+    .original .notices { margin:12px 12px 0; height:100px; display:grid; grid-template-rows:55px 37px; gap:8px }
+    .original .stats { border-radius:7px; padding:0 10px; background:#2e533e; color:white }
+    .big-rule { text-align:left; padding:0 10px; font-size:12px; border:1px solid #d9ceba; border-radius:7px; background:#f5ebd7 }
+    .improved .notices { margin:6px 12px 0; height:26px }
+    .improved .stats { height:26px }
+    .board { margin-top:12px; padding:0 8px 12px; background-color:#e5cfaa; background-image:radial-gradient(#be9e70 0.65px,transparent 0.85px); background-size:7px 7px; position:relative; min-height:200px }
+    .wall-head { height:40px; justify-content:space-between; gap:4px }
+    .wall-head h5 { font-size:15px; margin:0; font-weight:750 }
+    .wall-head .total { font-size:11px; font-weight:500; color:#564b39 }
+    .match { min-height:32px; background:#244936; color:white; border:0 }
+    .old-match { position:absolute; right:12px; top:128px; z-index:1; padding:7px 9px; border-radius:7px; border:1px solid #c6c8aa; background:#ffffee; color:#32543f; box-shadow:0 2px 7px #50492530; font-size:12px; font-weight:700; pointer-events:none }
+    .original .match,.improved .old-match { display:none }
+    .notes { margin:0; padding:0; list-style:none; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px }
+    .note { display:flex; flex-direction:column; align-items:flex-start; width:100%; height:114px; padding:9px; text-align:left; color:#2d321e; background:#f9df82; border:0; border-radius:3px 3px 8px 3px; box-shadow:0 2px 3px #624e2923 }
+    .note.offer { background:#d8e7c8 }
+    .note .kind { font-size:10px; padding:2px 5px; border-radius:4px; background:#ffffff72; font-weight:650 }
+    .note strong { font-size:clamp(13px,1.13vw,17px); line-height:1.37; margin-top:7px; letter-spacing:-.035em; font-weight:700; overflow-wrap:anywhere; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden }
+    .note .when { margin-top:auto; color:#4d5442; font-size:10px }
+    .demo-tip { font-size:12px; color:#505c50; margin:13px 1px 0; line-height:1.6 }
+    .mode-switch { display:none }
+    dialog { width:min(390px,calc(100% - 32px)); padding:24px; border:1px solid #c0c6b7; border-radius:16px; color:var(--ink); background:#fffdf5; box-shadow:0 18px 60px #12271c33 }
+    dialog::backdrop { background:#18261ee0; opacity:.55 }
+    .dialog-bar { justify-content:space-between; gap:12px }
+    dialog h2 { margin:0; font-size:21px }
+    dialog p { font-size:15px; line-height:1.7; margin:15px 0 4px }
+    .dismiss { min-height:40px; padding:0 11px; flex-shrink:0 }
+    form { margin-top:16px }
+    form label { display:block; font-size:13px; margin-bottom:6px }
+    textarea { resize:vertical; width:100%; min-height:82px; padding:9px; background:white; border:1px solid #929d8b; border-radius:7px }
+    form .submit { display:block; margin-top:12px; border:0; border-radius:7px; padding:10px 16px; background:var(--forest); color:white; font-weight:650 }
+    @media (min-width:1500px) { .layout { padding:78px 0 } }
+    @media (max-width:970px) {
+      .layout { grid-template-columns:1fr; gap:24px; padding:32px 0 }
+      .intro { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px 24px }
+      .eyebrow,.intro h1,.lead,.ctl { grid-column:1 }
+      h1 { font-size:56px; margin:0 0 5px }
+      h1 span { display:inline }
+      .eyebrow { margin:0 0 4px }
+      .lead { max-width:38em; font-size:16px }
+      .ctl { margin-top:5px }
+      .measure { grid-column:2; grid-row:2 / 5; align-self:center; margin:0; padding:0 0 0 18px; border-top:0; border-left:1px solid var(--edge); max-width:150px }
+      .stage { max-width:850px; width:100%; margin:auto }
+    }
+    @media (max-width:640px) {
+      .page { padding:0 16px }
+      .top { height:55px }
+      .layout { padding:23px 0 }
+      .intro { display:block }
+      .eyebrow { font-size:12px; margin-bottom:8px }
+      h1 { font-size:clamp(44px,10vw,61px); margin:0 0 12px }
+      .lead { font-size:15px; line-height:1.55 }
+      .ctl { margin-top:14px }
+      .measure { display:flex; align-items:center; gap:12px; max-width:none; margin-top:18px; padding:12px 0 0; border-left:0; border-top:1px solid var(--edge) }
+      .measure strong { font-size:33px }
+      .measure small { margin:0; font-size:12px }
+      .stage { border-radius:15px }
+      .stage-head { margin-bottom:12px }
+      .pair { display:block }
+      .variant:not(.current),.legend { display:none }
+      .mode-switch { display:flex; padding:3px; margin-bottom:10px; background:#dcd9cb; border-radius:8px; gap:3px }
+      .mode-switch button { flex:1; min-height:38px; font-weight:650; font-size:13px; border-radius:6px; border:0; background:transparent }
+      .mode-switch button[aria-pressed=true] { color:#244936; background:#fffdf4 }
+      .note strong { font-size:16px }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="top">
+      <div class="signature"><span class="mark" aria-hidden="true"></span>UI DSign Agent</div>
+      <a href="https://github.com/w88856678-rgb/ui-dsign-agent">GitHub 仓库 <span aria-hidden="true">↗</span></a>
+    </header>
+    <main class="layout">
+      <div class="intro">
+        <p class="eyebrow">开源 Codex 设计 Skill</p>
+        <h1>UI DSign <span>Agent</span></h1>
+        <p class="lead">把参考图、线框或现有页面交给 Codex，做出可以点按、可以对照的网页和移动界面。</p>
+        <div class="ctl">
+          <a class="download" href="https://github.com/w88856678-rgb/ui-dsign-agent/releases/latest/download/ui-dsign-agent.zip">下载安装包 <span aria-hidden="true">↓</span></a>
+          <a class="install" href="https://github.com/w88856678-rgb/ui-dsign-agent#安装">安装说明</a>
+        </div>
+        <p class="measure"><strong>2 <span>→</span> 4</strong><small>同尺寸预览中，首屏能读全的便签标题数</small></p>
+      </div>
+      <section class="stage" aria-labelledby="case-title">
+        <header class="stage-head"><h2 id="case-title">社区便签墙</h2><span>首屏布局对照</span></header>
+        <div class="mode-switch" role="group" aria-label="切换便签墙版本">
+          <button type="button" data-show="original" aria-pressed="false">改版前</button>
+          <button type="button" data-show="improved" aria-pressed="true">改版后</button>
+        </div>
+        <div class="pair">
+          <article class="variant original" aria-label="改版前"><h3 class="legend">改版前</h3></article>
+          <article class="variant improved current" aria-label="改版后"><h3 class="legend">改版后</h3></article>
+        </div>
+        <p class="demo-tip">点一张便签看详情，或用「贴需求」试一条自己的文案。演示数据仅在当前页面生效。</p>
+        <noscript>请启用 JavaScript 来操作这份演示。你也可以在 GitHub 仓库首页查看对照图。</noscript>
+      </section>
+    </main>
+  </div>
+  <template id="wall">
+    <div class="screen" tabindex="0" role="region" aria-label="可滚动的便签墙">
+      <header class="mast"><div><h4>邻里便签</h4><small>小店资源互助板</small></div><button type="button" class="rule-inline" data-action="rules">互助守则</button></header>
+      <div class="actions"><button type="button" data-action="need">＋ 贴需求</button><button type="button" data-action="offer">＋ 贴资源</button></div>
+      <div class="notices"><div class="stats">本周已有 3 次互助</div><button type="button" class="big-rule" data-action="rules">邻里互助守则　›</button></div>
+      <div class="board">
+        <div class="wall-head"><h5>附近便签 <span class="total"></span></h5><button type="button" class="match" data-action="match">找匹配 ›</button></div>
+        <span class="old-match" aria-hidden="true">找匹配</span>
+        <ul class="notes"></ul>
+      </div>
+    </div>
+  </template>
+  <template id="note"><li><button class="note" type="button"><span class="kind"></span><strong></strong><span class="when"></span></button></li></template>
+  <dialog aria-labelledby="dialog-title">
+    <div class="dialog-bar"><h2 id="dialog-title"></h2><button type="button" class="dismiss" autofocus>关闭</button></div>
+    <p class="dialog-text"></p>
+    <form hidden>
+      <label for="note-text">便签内容</label>
+      <textarea id="note-text" maxlength="44" required></textarea>
+      <button type="submit" class="submit">贴到便签墙</button>
+    </form>
+  </dialog>
+  <script>
+    const notes = [
+      { kind:'need', title:'周五想借一台投影仪', when:'周五傍晚', detail:'社区放映会要用两小时，结束后当晚归还。' },
+      { kind:'offer', title:'折叠长桌可以外借', when:'周末可取', detail:'两张可折叠长桌，适合周末市集或小型活动。' },
+      { kind:'offer', title:'闲置投影仪可借出', when:'周五下午', detail:'投影仪和连接线齐全，周五下午可以自取。' },
+      { kind:'need', title:'市集缺一块黑板', when:'这周六', detail:'想在摊位上手写菜单，小黑板或磁吸板都可以。' },
+      { kind:'need', title:'想借几把折叠椅', when:'下周一', detail:'读书会还缺四个座位，用完即可送回。' },
+      { kind:'offer', title:'有一箱空玻璃瓶', when:'随时可取', detail:'清洗过的小玻璃瓶，可以用于插花或手作。' }
+    ];
+    const variants = [...document.querySelectorAll('.variant')];
+    const dialog = document.querySelector('dialog');
+    const form = dialog.querySelector('form');
+    const input = form.querySelector('textarea');
+    let postKind = 'need';
+
+    function openDialog(title, text, posting) {
+      dialog.querySelector('h2').textContent = title;
+      dialog.querySelector('.dialog-text').textContent = text;
+      form.hidden = !posting;
+      input.value = '';
+      input.setCustomValidity('');
+      dialog.showModal();
+      if (posting) input.focus();
+    }
+
+    function renderNotes() {
+      for (const variant of variants) {
+        const list = variant.querySelector('.notes');
+        list.replaceChildren();
+        variant.querySelector('.total').textContent = notes.length + ' 张';
+        for (const note of notes) {
+          const row = document.querySelector('#note').content.cloneNode(true);
+          const button = row.querySelector('button');
+          button.classList.add(note.kind);
+          row.querySelector('.kind').textContent = note.kind === 'need' ? '我需要' : '我能提供';
+          row.querySelector('strong').textContent = note.title;
+          row.querySelector('.when').textContent = note.when;
+          button.addEventListener('click', () => openDialog(note.title, note.when + ' · ' + note.detail, false));
+          list.append(row);
+        }
+      }
+    }
+
+    for (const variant of variants) {
+      variant.append(document.querySelector('#wall').content.cloneNode(true));
+      variant.addEventListener('click', (event) => {
+        const action = event.target.closest('[data-action]')?.dataset.action;
+        if (action === 'rules') openDialog('互助守则', '借用前确认物品状态、时间和归还方式。', false);
+        if (action === 'match') openDialog('一组匹配示例', '「周五想借一台投影仪」遇到了「闲置投影仪可借出」。两条便签都有投影仪，取还时间也有交集。', false);
+        if (action === 'need' || action === 'offer') {
+          postKind = action;
+          openDialog(action === 'need' ? '贴一张需求便签' : '贴一张资源便签', '写清楚你需要或能提供什么，两版会同步显示。', true);
+        }
+      });
+    }
+    renderNotes();
+    dialog.querySelector('.dismiss').addEventListener('click', () => dialog.close());
+    input.addEventListener('input', () => input.setCustomValidity(''));
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const title = input.value.trim();
+      if (!title) {
+        input.setCustomValidity('请写点便签内容。');
+        input.reportValidity();
+        return;
+      }
+      notes.unshift({kind:postKind, title, when:'刚刚', detail:'这是你在当前演示中添加的便签。'});
+      renderNotes();
+      dialog.close();
+    });
+    for (const switcher of document.querySelectorAll('[data-show]')) {
+      switcher.addEventListener('click', () => {
+        for (const option of document.querySelectorAll('[data-show]')) option.setAttribute('aria-pressed', String(option === switcher));
+        for (const variant of variants) variant.classList.toggle('current', variant.classList.contains(switcher.dataset.show));
+      });
+    }
+  </script>
+</body>
+</html>

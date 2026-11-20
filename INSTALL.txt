@@ -1,0 +1,28 @@
+UI DSign Agent · Codex 安装说明
+
+在线安装
+
+在 Codex 中发送下面一行。
+
+$skill-installer 请从 https://github.com/w88856678-rgb/ui-dsign-agent/tree/main/skills/ui-dsign-agent 安装 UI DSign Agent 到我的个人技能目录。
+
+从 ZIP 安装
+
+解压 ui-dsign-agent.zip，把整个 ui-dsign-agent 文件夹复制到个人 Codex 技能目录。
+
+  macOS / Linux    ~/.codex/skills/
+  Windows          %USERPROFILE%\.codex\skills\
+
+目录还没有时可以先建好。如果自定义了 CODEX_HOME，请使用其下的 skills 目录。复制后，文件位置应为 skills/ui-dsign-agent/SKILL.md。
+
+试一次
+
+下一条消息可以在自己的项目里试试这句。
+
+$ui-dsign-agent 帮我优化这个预约首页，让新用户一眼找到下一个可预约时间，并给我一个可点击的预览。
+
+这个包包含核心工作流和视觉提示词。外部专长可以按需另装。
+
+项目主页 https://github.com/w88856678-rgb/ui-dsign-agent
+交互演示 https://w88856678-rgb.github.io/ui-dsign-agent/
+许可证见 ui-dsign-agent/LICENSE。

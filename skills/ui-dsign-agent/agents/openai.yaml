@@ -1,0 +1,3 @@
+interface:
+  display_name: "UI DSign Agent"
+  short_description: "从参考图或线框设计网页与移动界面，统一多屏样式并检查关键交互。"
