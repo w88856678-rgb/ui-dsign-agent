@@ -2,17 +2,13 @@
 
 **一个给 Codex 用的开源 UI 设计 Skill。** 给它一张参考图、一组线框，或直接打开已有项目，告诉它用户最想完成什么。它会沿用项目的组件和视觉风格，把需求落实到页面、交互和可以检查的结果上。
 
-[点开交互演示](https://w88856678-rgb.github.io/ui-dsign-agent/) · [下载安装包](https://github.com/w88856678-rgb/ui-dsign-agent/releases/latest/download/ui-dsign-agent.zip) · [查看首发说明](https://github.com/w88856678-rgb/ui-dsign-agent/releases/tag/v1.0.0)
+[打开产品发布页](https://w88856678-rgb.github.io/ui-dsign-agent/) · [下载安装包](https://github.com/w88856678-rgb/ui-dsign-agent/releases/latest/download/ui-dsign-agent.zip) · [版本说明](https://github.com/w88856678-rgb/ui-dsign-agent/releases/latest)
 
-[![社区便签墙改版对照。相同视口下，左侧原版能读全两张便签的标题，右侧优化版能读全四张。点图进入可操作演示。](docs/preview.png)](https://w88856678-rgb.github.io/ui-dsign-agent/)
+## 在自己的项目里试一句
 
-## 看一次改版
+> `$ui-dsign-agent` 做一个双色印刷工作坊的预约页。让访客第一眼看到可预约的场次，能用键盘选时间，确认后能看到自己选了哪一场。
 
-一家街坊小店打开社区便签墙，想先看看附近谁在求助。原版把两块公告放在便签前面，匹配提示又浮在卡片上。给 Codex 的任务可以具体到这一句。
-
-> `$ui-dsign-agent` 帮我改这个便签墙首页。保留黄绿便签，让店主打开就能多读几条附近需求，匹配入口也要能用键盘操作。
-
-改版把互助守则移到页头，统计收成一行，匹配入口移到「附近便签」旁。两版使用相同的六条示例内容和 424 CSS 像素高的预览视口。**第一张便签上移了 80 像素，首屏能读全的标题从 2 个变成 4 个。** 打开演示可以点便签、用键盘进入匹配，或贴一条自己的需求，在两版同时查看。[试用便签墙](https://w88856678-rgb.github.io/ui-dsign-agent/)
+把「双色印刷工作坊」换成你的产品，带上参考图或现有页面。保留那句关于用户要完成什么的说明，方便你拿成品逐项试一遍。
 
 ## 什么时候用它
 
@@ -33,12 +29,6 @@ $skill-installer 请从 https://github.com/w88856678-rgb/ui-dsign-agent/tree/mai
 
 也可以下载 ZIP，解压后把整个 `ui-dsign-agent` 文件夹放进个人 Codex 技能目录。压缩包内的 `安装说明.txt` 写有 macOS、Windows 和 Linux 的默认路径。[下载可转发的 ZIP](https://github.com/w88856678-rgb/ui-dsign-agent/releases/latest/download/ui-dsign-agent.zip)
 
-**第一次用**，可以直接在自己的项目里试这句。
-
-```text
-$ui-dsign-agent 帮我改这个预约首页。让第一次来的用户一眼找到下一个可预约时间，沿用项目现有组件，给我一个可点击的预览。
-```
-
 核心工作流和视觉提示词参考可以独立使用。已安装的 `mobile-app-design`、`better-icons`、`impeccable` 等专长会按任务选用，完整分工表在 Skill 正文中。[工作流源码](skills/ui-dsign-agent/SKILL.md) · [视觉提示词参考](skills/ui-dsign-agent/references/visual-prompts.md)
 
 ## 参与改进
@@ -47,4 +37,4 @@ $ui-dsign-agent 帮我改这个预约首页。让第一次来的用户一眼找�
 
 本地打开 `docs/index.html` 就可以离线运行演示。在仓库根目录运行 `python3 scripts/package_release.py`，会在 `dist/` 生成可转发的 ZIP 和离线演示文件。
 
-设计方法参考了《AI 生图提示词 / 生成技巧》的 UI 与运营视觉案例。便签墙演示使用为公开发布编写的示例数据。本仓库的工作流、说明和演示采用 MIT 许可证，提到的第三方 Skill 遵循各自项目的许可。[MIT License](LICENSE)
+设计方法参考了《AI 生图提示词 / 生成技巧》的 UI 与运营视觉案例。本仓库的工作流、说明和演示采用 MIT 许可证，提到的第三方 Skill 遵循各自项目的许可。[MIT License](LICENSE)
